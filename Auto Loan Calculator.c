@@ -1,3 +1,6 @@
+//Final Project: Auto Loan Calculator
+//Author: Leevi Savikko
+
 #include<stdio.h>
 #include<string.h>
 #include<math.h>
@@ -35,6 +38,14 @@ int main(void){
     int operationInt;
     int arraySize = 0;
     int totalLines = 1;
+    int oldCarValueMax = 0;
+    int newCarValueMax = 0;
+    int totalLoanMax = 0;
+    int monthlyPaymentMax = 0;
+    int oldCarValueDigits = 0;
+    int newCarValueDigits = 0;
+    int totalLoanDigits = 0;
+    int monthlyPaymentDigits = 0;
     int lineNumber;
     char fileName[MAX];
     char operation[MAX];
@@ -168,10 +179,50 @@ int main(void){
         //If user enters PRINT
         //Print all loans
         if (strcmp(operation, "PRINT") == 0){
+            //Check number of digits in old car value, new car value, total loan and monthly payment to determine the width of the columns
+            for (i = 0; i < totalLines; i++){
+                if (readLoans[i].monthlyPayment != 0){
+                    if (readLoans[i].oldCarValue > oldCarValueMax){
+                        oldCarValueMax = readLoans[i].oldCarValue;
+                    }
+                    if (readLoans[i].newCarValue > newCarValueMax){
+                        newCarValueMax = readLoans[i].newCarValue;
+                    }
+                    if (readLoans[i].totalLoan > totalLoanMax){
+                        totalLoanMax = readLoans[i].totalLoan;
+                    }
+                    if (readLoans[i].monthlyPayment > monthlyPaymentMax){
+                        monthlyPaymentMax = readLoans[i].monthlyPayment;
+                    }
+                }
+            }
+            //Calculate number of digits in old car value, new car value, total loan and monthly payment
+            while (oldCarValueMax != 0){
+                oldCarValueMax /= 10;
+                oldCarValueDigits++;
+            }
+            while (newCarValueMax != 0){
+                newCarValueMax /= 10;
+                newCarValueDigits++;
+            }
+            while (totalLoanMax != 0){
+                totalLoanMax /= 10;
+                totalLoanDigits++;
+            }
+            while (monthlyPaymentMax != 0){
+                monthlyPaymentMax /= 10;
+                monthlyPaymentDigits++;
+            }
+            //Add 3 to the number of digits to account for the decimal point and 2 decimal places
+            oldCarValueDigits += 3;
+            newCarValueDigits += 3;
+            totalLoanDigits += 3;
+            monthlyPaymentDigits += 3;
             for (i = 0; i < totalLines; i++){
                 //Print only if monthly payment is not 0 to avoid printing empty lines
                 if (readLoans[i].monthlyPayment != 0){
-                    printf("Old car value: $%.2f New car value: $%.2f Total loan: $%.2f Loan length: %d Monthly interest rate: %.2f%% Monthly payment: $%.2f\n", readLoans[i].oldCarValue, readLoans[i].newCarValue, readLoans[i].totalLoan, readLoans[i].loanLength, readLoans[i].monthInterestRate, readLoans[i].monthlyPayment); 
+                    //Print everything with same number of characters to make it look nice
+                    printf("Loan #%d Old car value: $%*.2f New car value: $%*.2f Total loan: $%*.2f Loan length: %*d Monthly interest rate: %*.2f%% Monthly payment: $%*.2f\n",i, oldCarValueDigits, readLoans[i].oldCarValue, newCarValueDigits, readLoans[i].newCarValue, totalLoanDigits, readLoans[i].totalLoan, 3, readLoans[i].loanLength, 5, readLoans[i].monthInterestRate, monthlyPaymentDigits, readLoans[i].monthlyPayment);
                 }
             }
         }
