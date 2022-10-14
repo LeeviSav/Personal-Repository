@@ -1,6 +1,6 @@
 //Final Project: Auto Loan Calculator
 //Author: Leevi Savikko
-//Last edit on 03/10/2022
+//Last edit on 14/10/2022
 
 #include<stdio.h>
 #include<string.h>
@@ -54,7 +54,7 @@ int main(void){
     char operation[MAX];
     //ask user to enter NEW to enter new loan information or FILE to read from file
     while (strcmp(operation, "NEW") != 0 && strcmp(operation, "EDIT") != 0 && strcmp(operation, "PRINT") != 0){
-        printf("Enter NEW to enter new loan information EDIT to read and edit from file or PRINT to print all loans from file: ");
+        printf("Enter NEW to enter new loan information, EDIT to read and edit from file or PRINT to print all loans from file: ");
         scanf("%s", operation);
     }
     //if user enters NEW, ask for loan information and calculate monthly payment
@@ -114,8 +114,8 @@ int main(void){
             printf("Enter line number to edit: ");
             scanf("%d", &lineNumber);
             //while loop to check that user enters a valid line number
-            while (lineNumber > totalLines || lineNumber < 1){
-                if(lineNumber > totalLines){
+            while (lineNumber > totalLines-1 || lineNumber < 1){
+                if(lineNumber > totalLines-1){
                     printf("Line number too large, enter a smaller line number: ");
                     scanf("%d", &lineNumber);
                 }
@@ -245,7 +245,10 @@ int main(void){
             //Print only if monthly payment is not 0 to avoid printing empty lines
             if (readLoans[i].monthlyPayment != 0){
                 //Print everything with same number of characters to make it look nice
-                printf("Loan #%d Old car value: $%*.2f New car value: $%*.2f Total loan: $%*.2f Loan length: %*d Monthly interest rate: %*.2f%% Monthly payment: $%*.2f\n",i, oldCarValueDigits, readLoans[i].oldCarValue, newCarValueDigits, readLoans[i].newCarValue, totalLoanDigits, readLoans[i].totalLoan, 3, readLoans[i].loanLength, 5, readLoans[i].monthInterestRate, monthlyPaymentDigits, readLoans[i].monthlyPayment);
+                if (i == 0){
+                    printf("|| %*s || %*s || %*s || %*s || %*s || %*s || %*s ||\n", 8, "Loan ID", oldCarValueDigits, "Old Car Value", newCarValueDigits, "New Car Value", totalLoanDigits, "Total Loan", 10, "Loan Length", 10, "Monthly Interest Rate:", monthlyPaymentDigits, "Monthly Payment");
+                }
+                printf("|| %*d || $%*.2f || $%*.2f || $%*.2f || %*d || %*.2f%% || $%*.2f ||\n",8,i+1, oldCarValueDigits+5, readLoans[i].oldCarValue, newCarValueDigits+4, readLoans[i].newCarValue, totalLoanDigits+1, readLoans[i].totalLoan, 11, readLoans[i].loanLength, 21, readLoans[i].monthInterestRate, monthlyPaymentDigits+7, readLoans[i].monthlyPayment);
             }
         }
         fclose(fp);
