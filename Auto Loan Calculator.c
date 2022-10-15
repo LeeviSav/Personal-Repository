@@ -17,17 +17,19 @@ struct loan{
     float newCarValue;
     float totalLoan;
     int loanLength;
-    float monthInterestRate;
+    float InterestRate;
     float monthlyPayment;
 };
-float monthlyPayment(float totalLoan, float monthInterestRate, int loanLength);
+float monthlyPayment(float totalLoan, float InterestRate, int loanLength);
 
 //Function to calculate monthly payment for the loan
-float monthlyPayment(float totalLoan, float monthInterestRate, int loanLength){
+float monthlyPayment(float totalLoan, float InterestRate, int loanLength){
     float monthlyPayment;
     //divide interest rate by 100 to make it a %
-    monthInterestRate = monthInterestRate/100;
-    monthlyPayment = totalLoan * (monthInterestRate * pow((1 + monthInterestRate), loanLength)) / (pow((1 + monthInterestRate), loanLength) - 1);
+    InterestRate = InterestRate/100;
+    //calculate monthly interest rate
+    InterestRate = InterestRate/12;
+    monthlyPayment = totalLoan * (InterestRate * pow((1 + InterestRate), loanLength)) / (pow((1 + InterestRate), loanLength) - 1);
     return monthlyPayment;
 }
 
@@ -69,13 +71,12 @@ int main(void){
             scanf("%f", &loans[arraySize].newCarValue);
             printf("Enter loan length (in months): ");
             scanf("%d", &loans[arraySize].loanLength);
-            printf("Enter monthly interest rate (without %%): ");
-            scanf("%f", &loans[arraySize].monthInterestRate);
+            printf("Enter Interest rate (without %%): ");
+            scanf("%f", &loans[arraySize].InterestRate);
 
-            //calculate total loan, monthly interest rate, and monthly payment from user inputs
-
+            //calculate total loan, Interest rate, and monthly payment from user inputs
             loans[arraySize].totalLoan = loans[arraySize].newCarValue - loans[arraySize].oldCarValue;
-            loans[arraySize].monthlyPayment = monthlyPayment(loans[arraySize].totalLoan, loans[arraySize].monthInterestRate, loans[arraySize].loanLength);
+            loans[arraySize].monthlyPayment = monthlyPayment(loans[arraySize].totalLoan, loans[arraySize].InterestRate, loans[arraySize].loanLength);
             arraySize++;
             printf("Enter old car value (enter -1 to stop): ");
         }
@@ -88,7 +89,7 @@ int main(void){
 
         //write loan information to file
         for (i = 0; i < arraySize; i++){
-            fprintf(fp, "Old car value: $%.2f New car value: $%.2f Total loan: $%.2f Loan length: %d Monthly interest rate: %.2f%% Monthly payment: $%.2f\n", loans[i].oldCarValue, loans[i].newCarValue, loans[i].totalLoan, loans[i].loanLength, loans[i].monthInterestRate, loans[i].monthlyPayment); 
+            fprintf(fp, "Old car value: $%.2f New car value: $%.2f Total loan: $%.2f Loan length: %d Interest rate: %.2f%% Monthly payment: $%.2f\n", loans[i].oldCarValue, loans[i].newCarValue, loans[i].totalLoan, loans[i].loanLength, loans[i].InterestRate, loans[i].monthlyPayment); 
         }
         fclose(fp);
         printf("File %s saved successfully!", fileName);
@@ -104,7 +105,7 @@ int main(void){
 
             //scan each line of file and store in struct readLoans
             for (i = 0; i < totalLines; i++){
-                fscanf(fp, "Old car value: $%f New car value: $%f Total loan: $%f Loan length: %d Monthly interest rate: %f%% Monthly payment: $%f\n", &readLoans[i].oldCarValue, &readLoans[i].newCarValue, &readLoans[i].totalLoan, &readLoans[i].loanLength, &readLoans[i].monthInterestRate, &readLoans[i].monthlyPayment);
+                fscanf(fp, "Old car value: $%f New car value: $%f Total loan: $%f Loan length: %d Interest rate: %f%% Monthly payment: $%f\n", &readLoans[i].oldCarValue, &readLoans[i].newCarValue, &readLoans[i].totalLoan, &readLoans[i].loanLength, &readLoans[i].InterestRate, &readLoans[i].monthlyPayment);
                 //If interest payment is not 0 increment lineNumber
                 if (readLoans[i].monthlyPayment != 0){
                     totalLines++;
@@ -128,11 +129,11 @@ int main(void){
             lineNumber--;
 
             //Ask user to enter what to edit
-            printf("Enter 1 to edit old car value, 2 to edit new car value, 3 to edit loan length, 4 to edit monthly interest rate: ");
+            printf("Enter 1 to edit old car value, 2 to edit new car value, 3 to edit loan length, 4 to edit Interest rate: ");
             scanf("%d", &operationInt);
             //while loop to check that user enters valid input
             while (operationInt < 1 || operationInt > 4){
-                printf("Invalid input. Enter 1 to edit old car value, 2 to edit new car value, 3 to edit loan length, 4 to edit monthly interest rate: ");
+                printf("Invalid input. Enter 1 to edit old car value, 2 to edit new car value, 3 to edit loan length, 4 to edit Interest rate: ");
                 scanf("%d", &operationInt);
             }
             //If user enters 1 edit old car value
@@ -153,22 +154,22 @@ int main(void){
                 scanf("%d", &readLoans[lineNumber].loanLength);
             }
 
-            //If user enters 4 edit monthly interest rate
+            //If user enters 4 edit Interest rate
             else if (operationInt == 4){
-                printf("Enter a new monthly interest rate: ");
-                scanf("%f", &readLoans[lineNumber].monthInterestRate);
+                printf("Enter a new Interest rate: ");
+                scanf("%f", &readLoans[lineNumber].InterestRate);
             }
 
             //Calculate new total loan, monthly interest rate, and monthly payment from the edited information
             readLoans[lineNumber].totalLoan = readLoans[lineNumber].newCarValue - readLoans[lineNumber].oldCarValue;
-            readLoans[lineNumber].monthlyPayment = monthlyPayment(readLoans[lineNumber].totalLoan, readLoans[lineNumber].monthInterestRate, readLoans[lineNumber].loanLength);
+            readLoans[lineNumber].monthlyPayment = monthlyPayment(readLoans[lineNumber].totalLoan, readLoans[lineNumber].InterestRate, readLoans[lineNumber].loanLength);
 
             //Write new loan information to file
             fp = fopen(fileName, "w");
             for (i = 0; i < totalLines; i++){
                 //Only write the information if monthly payment is not 0 to avoid writing empty lines
                 if (readLoans[i].monthlyPayment != 0){
-                    fprintf(fp, "Old car value: $%.2f New car value: $%.2f Total loan: $%.2f Loan length: %d Monthly interest rate: %.2f%% Monthly payment: $%.2f\n", readLoans[i].oldCarValue, readLoans[i].newCarValue, readLoans[i].totalLoan, readLoans[i].loanLength, readLoans[i].monthInterestRate, readLoans[i].monthlyPayment); 
+                    fprintf(fp, "Old car value: $%.2f New car value: $%.2f Total loan: $%.2f Loan length: %d Interest rate: %.2f%% Monthly payment: $%.2f\n", readLoans[i].oldCarValue, readLoans[i].newCarValue, readLoans[i].totalLoan, readLoans[i].loanLength, readLoans[i].InterestRate, readLoans[i].monthlyPayment); 
                 }
             }   
             fclose(fp);
@@ -193,7 +194,7 @@ int main(void){
         fp = fopen(fileName, "r");
         //scan each line of file and store in struct readLoans
         for (i = 0; i < totalLines; i++){
-            fscanf(fp, "Old car value: $%f New car value: $%f Total loan: $%f Loan length: %d Monthly interest rate: %f%% Monthly payment: $%f\n", &readLoans[i].oldCarValue, &readLoans[i].newCarValue, &readLoans[i].totalLoan, &readLoans[i].loanLength, &readLoans[i].monthInterestRate, &readLoans[i].monthlyPayment);
+            fscanf(fp, "Old car value: $%f New car value: $%f Total loan: $%f Loan length: %d Interest rate: %f%% Monthly payment: $%f\n", &readLoans[i].oldCarValue, &readLoans[i].newCarValue, &readLoans[i].totalLoan, &readLoans[i].loanLength, &readLoans[i].InterestRate, &readLoans[i].monthlyPayment);
             //If interest payment is not 0 increment lineNumber
             if (readLoans[i].monthlyPayment != 0){
                 totalLines++;
@@ -241,14 +242,24 @@ int main(void){
             monthlyPaymentDigits += 3;
             k = 1;
         }
+        //If Old car value, New car value or Total loan are too shortm add more numbers to the digits
+        if(oldCarValueDigits < 12){
+            oldCarValueDigits = 12;
+        }
+        if(newCarValueDigits < 12){
+            newCarValueDigits = 12;
+        }
+        if(totalLoanDigits < 13){
+            totalLoanDigits = 13;
+        }
         for (i = 0; i < totalLines; i++){
             //Print only if monthly payment is not 0 to avoid printing empty lines
             if (readLoans[i].monthlyPayment != 0){
                 //Print everything with same number of characters to make it look nice
                 if (i == 0){
-                    printf("|| %*s || %*s || %*s || %*s || %*s || %*s || %*s ||\n", 8, "Loan ID", oldCarValueDigits, "Old Car Value", newCarValueDigits, "New Car Value", totalLoanDigits, "Total Loan", 10, "Loan Length", 10, "Monthly Interest Rate:", monthlyPaymentDigits, "Monthly Payment");
+                    printf("|| %-*s || %-*s || %-*s || %-*s || %-*s || %-*s || %-*s ||\n", 7, "Loan ID", oldCarValueDigits, "Old Car Value", newCarValueDigits, "New Car Value", totalLoanDigits+1, "Total Loan", 10, "Loan Length", 10, "Interest Rate:", 15, "Monthly Payment");
                 }
-                printf("|| %*d || $%*.2f || $%*.2f || $%*.2f || %*d || %*.2f%% || $%*.2f ||\n",8,i+1, oldCarValueDigits+5, readLoans[i].oldCarValue, newCarValueDigits+4, readLoans[i].newCarValue, totalLoanDigits+1, readLoans[i].totalLoan, 11, readLoans[i].loanLength, 21, readLoans[i].monthInterestRate, monthlyPaymentDigits+7, readLoans[i].monthlyPayment);
+                printf("|| %*d || $%*.2f || $%*.2f || $%*.2f || %*d || %*.2f%% || $%*.2f ||\n",7,i+1, oldCarValueDigits, readLoans[i].oldCarValue, newCarValueDigits, readLoans[i].newCarValue, totalLoanDigits, readLoans[i].totalLoan, 11, readLoans[i].loanLength, 13, readLoans[i].InterestRate, 14, readLoans[i].monthlyPayment);
             }
         }
         fclose(fp);
