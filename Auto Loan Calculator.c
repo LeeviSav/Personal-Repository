@@ -10,6 +10,7 @@
 #include<ctype.h>
 
 #define MAX 100
+#define PRINTMAX 15
 
 //struct for loan information, including value of old car, price of new car, length of loan, interest rate, and monthly payment
 struct loan{
@@ -47,10 +48,6 @@ int main(void){
     int newCarValueMax = 0;
     int totalLoanMax = 0;
     int monthlyPaymentMax = 0;
-    int oldCarValueDigits = 0;
-    int newCarValueDigits = 0;
-    int totalLoanDigits = 0;
-    int monthlyPaymentDigits = 0;
     int lineNumber;
     char fileName[MAX];
     char operation[MAX];
@@ -71,7 +68,7 @@ int main(void){
             scanf("%f", &loans[arraySize].newCarValue);
             printf("Enter loan length (in months): ");
             scanf("%d", &loans[arraySize].loanLength);
-            printf("Enter Interest rate (without %%): ");
+            printf("Enter interest rate (without %%): ");
             scanf("%f", &loans[arraySize].InterestRate);
 
             //calculate total loan, Interest rate, and monthly payment from user inputs
@@ -156,7 +153,7 @@ int main(void){
 
             //If user enters 4 edit Interest rate
             else if (operationInt == 4){
-                printf("Enter a new Interest rate: ");
+                printf("Enter a new interest rate: ");
                 scanf("%f", &readLoans[lineNumber].InterestRate);
             }
 
@@ -200,66 +197,15 @@ int main(void){
                 totalLines++;
             }
         }
-        //Check number of digits in old car value, new car value, total loan and monthly payment to determine the width of the columns
-        for (i = 0; i < totalLines; i++){
-            if (readLoans[i].monthlyPayment != 0){
-                if (readLoans[i].oldCarValue > oldCarValueMax){
-                    oldCarValueMax = readLoans[i].oldCarValue;
-                }
-                if (readLoans[i].newCarValue > newCarValueMax){
-                    newCarValueMax = readLoans[i].newCarValue;
-                }
-                if (readLoans[i].totalLoan > totalLoanMax){
-                    totalLoanMax = readLoans[i].totalLoan;
-                }
-                if (readLoans[i].monthlyPayment > monthlyPaymentMax){
-                    monthlyPaymentMax = readLoans[i].monthlyPayment;
-                }
-            }
-        }
-        //Calculate number of digits in old car value, new car value, total loan and monthly payment
-        while (oldCarValueMax != 0){
-            oldCarValueMax /= 10;
-            oldCarValueDigits++;
-        }
-        while (newCarValueMax != 0){
-            newCarValueMax /= 10;
-            newCarValueDigits++;
-        }
-        while (totalLoanMax != 0){
-            totalLoanMax /= 10;
-            totalLoanDigits++;
-        }
-        while (monthlyPaymentMax != 0){
-            monthlyPaymentMax /= 10;
-            monthlyPaymentDigits++;
-        }
-        //Add 3 to the number of digits to account for the decimal point and 2 decimal places
-        if (k == 0){
-            oldCarValueDigits += 3;
-            newCarValueDigits += 3;
-            totalLoanDigits += 3;
-            monthlyPaymentDigits += 3;
-            k = 1;
-        }
-        //If Old car value, New car value or Total loan are too shortm add more numbers to the digits
-        if(oldCarValueDigits < 12){
-            oldCarValueDigits = 12;
-        }
-        if(newCarValueDigits < 12){
-            newCarValueDigits = 12;
-        }
-        if(totalLoanDigits < 13){
-            totalLoanDigits = 13;
-        }
         for (i = 0; i < totalLines; i++){
             //Print only if monthly payment is not 0 to avoid printing empty lines
             if (readLoans[i].monthlyPayment != 0){
                 //Print everything with same number of characters to make it look nice
                 if (i == 0){
-                    printf("|| %-*s || %-*s || %-*s || %-*s || %-*s || %-*s || %-*s ||\n", 7, "Loan ID", oldCarValueDigits, "Old Car Value", newCarValueDigits, "New Car Value", totalLoanDigits+1, "Total Loan", 10, "Loan Length", 10, "Interest Rate:", 15, "Monthly Payment");
+                    printf("|| %-*s || %-*s || %-*s || %-*s || %-*s || %-*s || %-*s ||\n", 7, "Loan ID", PRINTMAX, "Old Car Value", PRINTMAX, "New Car Value", PRINTMAX, "Total Loan", PRINTMAX, "Loan Length", PRINTMAX, "Interest Rate", PRINTMAX, "Monthly Payment");
                 }
-                printf("|| %*d || $%*.2f || $%*.2f || $%*.2f || %*d || %*.2f%% || $%*.2f ||\n",7,i+1, oldCarValueDigits, readLoans[i].oldCarValue, newCarValueDigits, readLoans[i].newCarValue, totalLoanDigits, readLoans[i].totalLoan, 11, readLoans[i].loanLength, 13, readLoans[i].InterestRate, 14, readLoans[i].monthlyPayment);
+                //Printing some with -1 to account for the extra character ($/%) added
+                printf("|| %*d || $%*.2f || $%*.2f || $%*.2f || %*d || %*.2f%% || $%*.2f ||\n",7,i+1, PRINTMAX-1, readLoans[i].oldCarValue, PRINTMAX-1, readLoans[i].newCarValue, PRINTMAX-1, readLoans[i].totalLoan, PRINTMAX, readLoans[i].loanLength, PRINTMAX-1, readLoans[i].InterestRate, PRINTMAX-1, readLoans[i].monthlyPayment);
             }
         }
         fclose(fp);
